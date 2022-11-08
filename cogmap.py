@@ -3,17 +3,15 @@ from LUE_rule import LUERule
 from cogmap_utils import *
 
 class LUECogmapEvent:
-    def __init__(self, seq, LUE_id, is_horizonral, point, local_cogmap_id):
+    def __init__(self, seq, LUE_id, is_horizonral, point, local_cogmap_id, cogmap):
+        self.cogmap = cogmap
         self.seq = seq # [Point, Point,...]
         self.LUE_id = LUE_id
         self.local_cogmap_id = local_cogmap_id
         self.intersects_ids =  [] # другие ЛУЕ-события с карты, с которыми это имеет персечение по первичным событиям
         self.is_horizontal = is_horizonral
         self.point = point
-
-
-    def get_mass(self):
-        return len(self.seq)
+        self.mass = len(self.seq)
 
     def add_intersection(self, id_in_cogmap):
         self.intersects_ids.append(id_in_cogmap)
@@ -26,6 +24,9 @@ class LUECogmapEvent:
                  return True
         return False
 
+    def __eq__(self, other):
+        return self.cogmap == other.cogmap and self.local_cogmap_id == other.local_cogmap_id
+
 
 class LUECogmap:
     def __init__(self, pic):
@@ -35,9 +36,11 @@ class LUECogmap:
         self._fill_hor_ver()
 
         self.local_ids_gen = IdsGenerator()
-        self.points_to_events = {}  # {point:  LUECogmapEvent }
-        self.LUE_events_list=[]
+        self.points_to_events = {}  # {point:  [LUECogmapEvent] }
+        self.LUE_events = {} # {local_event_id:  LUECogmapEvent }
 
+    def __eq__(self, other):
+        return self.pic == other.pic
 
     def _fill_hor_ver(self):
         rule_hor = LUERule(dx=1, dy=0, max_rad=1)
@@ -49,12 +52,14 @@ class LUECogmap:
 
 
     def _register_LUE_event(self, new_LUE_event):
-        for old_LUE_event in self.LUE_events_list:
+        for old_local_event_id, old_LUE_event in self.LUE_events.items():
             if new_LUE_event.has_intersection(old_LUE_event):
                 old_LUE_event.add_intersection(new_LUE_event.local_cogmap_id)
                 new_LUE_event.add_intersection(old_LUE_event.local_cogmap_id)
-        self.LUE_events_list.append(new_LUE_event)
-        self.points_to_events[new_LUE_event.point]=new_LUE_event
+        self.LUE_events[new_LUE_event.local_cogmap_id]=new_LUE_event
+        if new_LUE_event.point not in  self.points_to_events.keys():
+            self.points_to_events[new_LUE_event.point]=[]
+        self.points_to_events[new_LUE_event.point].append(new_LUE_event)
 
 
     def update_by_LUE_rule(self, rule):
@@ -69,10 +74,43 @@ class LUECogmap:
                 start_event = LUECogmapEvent(seq, LUE_id=rule.start_LUE_id,
                                              is_horizonral=rule.is_horizontal,
                                              point=seq[-1],
-                                             local_cogmap_id=self.local_ids_gen.generate_id())
+                                             local_cogmap_id=self.local_ids_gen.generate_id(),
+                                             cogmap=self)
                 end_event = LUECogmapEvent(seq, LUE_id=rule.end_LUE_id,
                                            is_horizonral=rule.is_horizontal,
                                            point=seq[0],
-                                           local_cogmap_id=self.local_ids_gen.generate_id())
+                                           local_cogmap_id=self.local_ids_gen.generate_id(),
+                                           cogmap=self)
                 self._register_LUE_event(start_event)
                 self._register_LUE_event(end_event)
+
+    def get_event_data(self, local_event_id):
+        lue_event = self.LUE_events[local_event_id]
+        point = lue_event.point
+        mass = lue_event.mass
+        LUE_id = lue_event.LUE_id
+        return point, mass, LUE_id
+
+    def get_point_of_event(self, local_event_id):
+        lue_event = self.LUE_events[local_event_id]
+        point = lue_event.point
+        return point
+
+    def get_LUE_cogmap_event(self, local_event_id):
+        return self.LUE_events[local_event_id]
+
+    def get_no_more_events_around_point_by_LUE(self, point, LUE_id, MAX_EVENTS, exclusions):
+        result_events_ids_list = []
+        MAX_RADIUS = 50
+        for radius in range(0, MAX_RADIUS+1):
+            candidate_points = get_coords_for_radius(center=point, radius=radius)
+            for candidate_point in candidate_points:
+                lue_cogmap_events_list_in_point = self.points_to_events.get(candidate_point, None)
+                if lue_cogmap_events_list_in_point is not None:
+                    for lue_cogmap_event in lue_cogmap_events_list_in_point:
+                        if lue_cogmap_event.LUE_id == LUE_id:
+                            if lue_cogmap_event.local_cogmap_id not in exclusions:
+                                result_events_ids_list.append(lue_cogmap_event.local_cogmap_id)
+                                if len(result_events_ids_list) == MAX_EVENTS:
+                                    break
+        return result_events_ids_list

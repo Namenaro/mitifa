@@ -35,3 +35,18 @@ class Context:
             map.update_by_LUE_rule(rule)
         for map in self.contrast_maps:
             map.update_by_LUE_rule(rule)
+
+
+def get_default_context():
+    LUE_events_ids_gen = IdsGenerator()
+    rule1 = LUERule(dx=0, dy=1, max_rad=5, is_horizontal=True, id_gen=LUE_events_ids_gen)
+    rule2 = LUERule(dx=1, dy=0, max_rad=5, is_horizontal=False, id_gen=LUE_events_ids_gen)
+    LUE_rules_list = [rule1, rule2]
+
+    context = Context(LUE_rules_list, class_num=147, contrast_sample_len=30)
+    return context
+
+if __name__ == '__main__':
+    logger = HtmlLogger("TRAIN LOG")
+    context = get_default_context()
+

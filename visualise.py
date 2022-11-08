@@ -12,21 +12,25 @@ def VIS_LUE_event(back_pic_binary, ax, LUE_event):
         ax.scatter(coord.x, coord.y, c=color, marker=marker, alpha=0.8, s=200)
 
     ax.scatter(LUE_event.point.x, LUE_event.point.y)
-    annotation_str = "LUE_id=" + str() + ", mass=" + str(LUE_event.get_mass())
+    annotation_str = "LUE_id=" + str(LUE_event.local_cogmap_id) + ", mass=" + str(LUE_event.mass)
     ax.annotate(annotation_str, (LUE_event.point.x, LUE_event.point.y), color='blue', xytext=(20, 15), textcoords='offset points',
                 ha='center', va='bottom', bbox=dict(boxstyle='round,pad=0.2', fc=color, alpha=0.6),
                 arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.95', color='b'))
 
 
 
-def VIS_LUE_cogmap(cogmap):
-    num_axs = len(cogmap.LUE_events_list)
+def VIS_LUE_cogmap(cogmap, logger):
+    LUE_events_list = list(cogmap.LUE_events.keys())
+    num_axs = len(LUE_events_list)
     fig, axs = plt.subplots(1, num_axs, figsize=(8 * num_axs, 8), dpi=60)
-    for i in range(num_axs):
-        VIS_LUE_event(cogmap.pic, axs[i], cogmap.LUE_events_list[i])
-    return fig
+    i=0
+    for local_event_id in LUE_events_list:
+        VIS_LUE_event(cogmap.pic, axs[i], cogmap.LUE_events[local_event_id])
+        i+=1
+    logger.add_fig(fig)
+    logger.save()
 
-def VIS_LUE_cogmap1(cogmap):
+def VIS_LUE_cogmap1(cogmap, logger):
     fig, axs = plt.subplots(1, 3, figsize=(8 * 2, 8), dpi=60)
     cm = plt.get_cmap('gray')
 
@@ -38,7 +42,8 @@ def VIS_LUE_cogmap1(cogmap):
 
     axs[2].title.set_text("ver_img")
     axs[2].imshow(cogmap.ver_img, cmap=cm, vmin=0, vmax=1)
-    return fig
+    logger.add_fig(fig)
+    logger.save()
 
 def VIS_exemplar(exemplar):
     pass
