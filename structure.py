@@ -27,6 +27,8 @@ class Structure:
         self.basic_nodes_ids = set()
         self.non_basic_nodes_ids = set()
 
+    def max_non_triviality(self):
+        return 2*len(self.recognition_order)
 
     def get_info_to_recognise_node(self, global_node_id):
         node = self.nodes_dict[global_node_id]
@@ -60,4 +62,7 @@ class Structure:
 
     def get_mass(self, global_event_id):
         return self.get_node_by_global_id(global_event_id).mass
+
+    def __len__(self):
+        return len(self.recognition_order)
 

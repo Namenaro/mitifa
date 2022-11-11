@@ -44,6 +44,8 @@ class Exemplar:
                 return global_node_id
         return None
 
+    def __len__(self):
+        return len(self.nodes_recognition_results)
     def eval_exemplar(self):
         exemplar_non_triviality = 0
         for global_node_id, node_recognition_res in self.nodes_recognition_results.items():
@@ -115,6 +117,7 @@ class Exemplar:
 
     def get_node_recognition_res(self, global_node_id):
         return self.nodes_recognition_results[global_node_id]
+
 
 
 
