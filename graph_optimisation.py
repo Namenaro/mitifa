@@ -48,6 +48,10 @@ class Graph:
         self.nodes_dict = {}  # {node_global_id: GraphNode}
         self.recognition_order = []  # [node_global_id_1, ..., node_global_id_n]
 
+    def get_parent_id(self, child_id):
+        graph_node = self.nodes_dict[child_id]
+        return graph_node.parent_global_node_id
+
     @staticmethod
     def rand_point():
         X = random.randint(0, 50)

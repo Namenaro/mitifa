@@ -21,9 +21,9 @@ def get_dammy_struct_from_events_list(cogmap_events_ids_list, cogmap):
     first_local_node_id = graph.recognition_order[0]
     point, mass, LUE_id = cogmap.get_event_data(local_event_id=first_local_node_id)
     first_dammy_global_node_id = ids_gen.generate_id()
-    dammy_struct.add_node(global_node_id=first_dammy_global_node_id, u_from_parent=None, parent_global_node_id=None,
+    dammy_struct.add_node(global_node_id=first_dammy_global_node_id, u_from_parent=Point(0,0), parent_global_node_id=None,
                           mass=mass, LUE_id=LUE_id)
-    dammy_exemplar.add_event_check_result(first_dammy_global_node_id, local_cogmap_id=first_local_node_id)
+    dammy_exemplar.add_event_check_result_DAMMY(first_dammy_global_node_id, local_cogmap_id=first_local_node_id)
 
     for local_node_id in graph.recognition_order[1:]:
         parent_local_node_id = graph.get_parent_id(local_node_id)
@@ -38,7 +38,7 @@ def get_dammy_struct_from_events_list(cogmap_events_ids_list, cogmap):
         dammy_struct.add_node(global_node_id=dammy_global_node_id,
                               u_from_parent=u_from_parent, parent_global_node_id=parent_global_node_id,
                               mass=mass, LUE_id=LUE_id)
-        dammy_exemplar.add_event_check_result(dammy_global_node_id, local_cogmap_id=local_node_id)
+        dammy_exemplar.add_event_check_result_DAMMY(dammy_global_node_id, local_cogmap_id=local_node_id)
 
     return dammy_struct, dammy_exemplar
 

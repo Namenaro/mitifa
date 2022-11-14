@@ -54,7 +54,8 @@ def VIS_LUE_cogmap_first_generation(cogmap, logger):
 def VIS_exemplar_as_graph(exemplar,need_annotations):
     fig, ax = plt.subplots()
 
-    title = str(exemplar.eval_exemplar()) + "-exempl "
+    #title = str(exemplar.eval_exemplar()) + "-exempl "
+    title = "-exempl "
     if not exemplar.is_recognition_done():
         title += ":NOT FULL"
     fig.title = title
@@ -88,7 +89,7 @@ def VIS_exemplar_as_graph_to_ax(ax, exemplar, need_annotations):
         # если это не начальное событие, то рисуем входящую стрелку от родителя:
         parent_global_id = node_recognition_res.structure_node.parent_global_node_id
         if parent_global_id is not None:
-            parent_point = exemplar.get_point_by_global_node_id(parent_global_id, global_node_id)
+            parent_point = exemplar.get_point_by_global_node_id(parent_global_id)
             arrow = mpatches.FancyArrowPatch((parent_point.x, parent_point.y), (coord.x, coord.y),
                                              mutation_scale=10)
             ax.add_patch(arrow)
@@ -107,13 +108,13 @@ def VIS_struct_as_graph(struct):
         parent_global_node_id = node.parent_global_node_id
         if parent_global_node_id is None:
             point = Point(0, 0)
-            global_ids_to_coords[parent_global_node_id] = point
+            global_ids_to_coords[global_node_id] = point
         else:
             u_from_parent = node.u_from_parent
             parent_point = global_ids_to_coords[parent_global_node_id]
             point = parent_point+u_from_parent
             global_ids_to_coords[global_node_id] = point
-            arrow = mpatches.FancyArrowPatch((parent_point.x, parent_point.y), (point.x, point.y),
+            arrow = mpatches.FancyArrowPatch((parent_point.x, -parent_point.y), (point.x, -point.y),
                                              mutation_scale=10)
             ax.add_patch(arrow)
         if node.actual_m_hist is not None:
@@ -121,7 +122,7 @@ def VIS_struct_as_graph(struct):
         else:
             color = 'red'
         marker = '$' + str(i) + '$'
-        ax.scatter(point.x, point.y, c=color, marker=marker, alpha=0.8, s=200)
+        ax.scatter(point.x, -point.y, c=color, marker=marker, alpha=0.8, s=200)
     return fig
 
 

@@ -58,7 +58,7 @@ def are_dubles(seq1, seq2):
     max_len = max(len(seq1), len(seq2))
     diff = max_len - num_of_common_elements
     if num_of_common_elements>diff: # общего больше, чем разного (эвристика)
-        print("duble found")
+        #print("duble found")
         return True
     return False
 

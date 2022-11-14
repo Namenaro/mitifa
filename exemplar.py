@@ -1,6 +1,6 @@
 from structure import *
 from hists import *
-from utils import norm
+from utils import norm, Point
 
 from copy import deepcopy
 
@@ -62,10 +62,13 @@ class Exemplar:
             self.list_basic_nodes_ids_to_recognise.remove(global_node_id)
         else:
             self.list_non_basic_nodes_ids_to_recognise.remove(global_node_id)
+
+        self.add_event_check_result_DAMMY(self, global_node_id, local_cogmap_id)
+
+    def add_event_check_result_DAMMY(self, global_node_id, local_cogmap_id):
         self.nodes_local_ids[global_node_id] = local_cogmap_id
         self.next_index_to_recognise += 1
 
-        # заполняем новое событие
         structure_node = self.structure.get_node_by_global_id(global_node_id)
         node_recognition_res = NodeRecognitionRes(structure_node)
         point, mass, _ = self.cogmap.get_event_data(local_cogmap_id)
@@ -73,14 +76,18 @@ class Exemplar:
         node_recognition_res.mass = mass
         node_recognition_res.point = point
         parent_node_global_id = structure_node.parent_global_node_id
-        parent_point = self.nodes_recognition_results[parent_node_global_id].point
-        predicted_point = parent_point + structure_node.u_from_parent
-        node_recognition_res.du = point - predicted_point
+
+        # заполняем du:
+        if parent_node_global_id is not None:
+            parent_point = self.nodes_recognition_results[parent_node_global_id].point
+            predicted_point = parent_point + structure_node.u_from_parent
+            node_recognition_res.du = point - predicted_point
+        else:
+            # это первая нода в цепочке # TODO возможно du надо ставить наоборот максимальным??
+            node_recognition_res.du = Point(0,0)
 
         # добавляем новое событие
         self.nodes_recognition_results[global_node_id] = node_recognition_res
-
-
     def make_prediction_for_next_event(self):
         next_global_node_id = self.get_next_event_global_id()
         parent_global_id, u_from_parent, predicted_mass, predicted_LUE_id =\

@@ -44,9 +44,9 @@ class Structure:
         self.nodes_dict[global_node_id]=new_node
         self.recognition_order.append(global_node_id)
         if actual_m_hist is None:
-            self.non_basic_nodes_ids.append(global_node_id)
+            self.non_basic_nodes_ids.add(global_node_id)
         else:
-            self.basic_nodes_ids.append(global_node_id)
+            self.basic_nodes_ids.add(global_node_id)
             self.nodes_dict[global_node_id].actual_m_hist = actual_m_hist
             self.nodes_dict[global_node_id].actual_du_hist = actual_du_hist
 
