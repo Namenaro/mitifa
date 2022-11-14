@@ -18,13 +18,14 @@ class BasicStructBuilder:
         self.logger = logger
 
     def init_first_base_node(self):
+        print("Start grow basic structure from dammy one..")
         first_node_id = self.dammy_struct.recognition_order[0]
         parent_global_node_id, u_from_parent, mass, LUE_id= self.dammy_struct.get_info_to_recognise_node(first_node_id)
         sample_masses, sample_dus = sample_event_by_LUE_and_mass(self.context.contrast_maps, LUE_id, mass)
         actual_m_hist = Hist(sample_masses)
         actual_du_hist = Hist(sample_dus)
         self.result_struct.add_node(first_node_id, u_from_parent, parent_global_node_id, mass, LUE_id, actual_m_hist=actual_m_hist, actual_du_hist=actual_du_hist)
-
+        print("First basic node added! ")
 
     def get_basic_struct(self, need_relax, need_readress):
         # создаем первое базовое событие, беря за основу небазовое первое событие из dammy_struct, по которой мы строим сейчас базовую стр-ру

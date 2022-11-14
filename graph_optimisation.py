@@ -9,6 +9,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 def get_optimized_graph(adjacency_matrix, id_list):
     Tcsr = minimum_spanning_tree(adjacency_matrix)
     min_tree = Tcsr.toarray().astype(float)
+    min_tree = min_tree.T
 
     if len(min_tree[0]) != len(id_list):
         print("Amount of ids don't match with adjacency matrix!")
@@ -18,11 +19,15 @@ def get_optimized_graph(adjacency_matrix, id_list):
         root = get_root(min_tree)
         order = traverse(min_tree, root)
 
-        graph_nodes = [GraphNode(id_list[root], None, None)]
-        for i in range(1, len(id_list)):
+        graph_nodes = []
+        for i in range(len(id_list)):
             du = get_du_from_parent(min_tree, i)
             parent_ind = get_parent(min_tree, i)
-            graph_nodes.append(GraphNode(id_list[i], du, id_list[parent_ind]))
+
+            if parent_ind is None:
+                graph_nodes.append(GraphNode(id_list[i], du, None))
+            else:
+                graph_nodes.append(GraphNode(id_list[i], du, id_list[parent_ind]))
 
         path = Graph()
         for node_id in order:

@@ -25,7 +25,11 @@ class LUECogmapEvent:
         return False
 
     def __eq__(self, other):
-        return self.cogmap == other.cogmap and self.local_cogmap_id == other.local_cogmap_id
+        if self.cogmap == other.cogmap:
+            if self.local_cogmap_id == other.local_cogmap_id:
+                return True
+        return False
+
 
 
 class LUECogmap:
@@ -40,7 +44,7 @@ class LUECogmap:
         self.LUE_events = {} # {local_event_id:  LUECogmapEvent }
 
     def __eq__(self, other):
-        return self.pic == other.pic
+        return (self.pic == other.pic).all()
 
     def _fill_hor_ver(self):
         rule_hor = LUERule(dx=1, dy=0, max_rad=1)
@@ -100,7 +104,7 @@ class LUECogmap:
         return self.LUE_events[local_event_id]
 
     def get_no_more_events_around_point_by_LUE(self, point, LUE_id, MAX_EVENTS, exclusions):
-        result_events_ids_list = []
+        result_events_list = []
         MAX_RADIUS = 50
         for radius in range(0, MAX_RADIUS+1):
             candidate_points = get_coords_for_radius(center=point, radius=radius)
@@ -110,7 +114,7 @@ class LUECogmap:
                     for lue_cogmap_event in lue_cogmap_events_list_in_point:
                         if lue_cogmap_event.LUE_id == LUE_id:
                             if lue_cogmap_event.local_cogmap_id not in exclusions:
-                                result_events_ids_list.append(lue_cogmap_event.local_cogmap_id)
-                                if len(result_events_ids_list) == MAX_EVENTS:
+                                result_events_list.append(lue_cogmap_event)
+                                if len(result_events_list) == MAX_EVENTS:
                                     break
-        return result_events_ids_list
+        return result_events_list

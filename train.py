@@ -36,8 +36,8 @@ def manual_train():
     # Выращиваем базовую структуру по dammy структуре:
     logger.add_line_big()
     logger.add_text("Выращиваем базовую структуру по dammy структуре...")
-    struct_builder = BasicStructBuilder(dammy_struct, dammy_exemplar, context, logger)
-    result_basic_struct = struct_builder.get_basic_struct()
+    struct_builder = BasicStructBuilder(dammy_struct, context, logger)
+    result_basic_struct = struct_builder.get_basic_struct(need_relax=False, need_readress=False)
 
 
     # оцениваем обученную структуру:--------------------------------------------------------

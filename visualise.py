@@ -131,7 +131,7 @@ def VIS_nodes_info_struct(struct, logger):
     nrows = len(struct)
     ncols = 2
 
-    fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
+    fig, axs = plt.subplots(nrows=max(len(struct), 2), ncols=ncols)
 
     for row in range(nrows):
         global_node_id = struct.recognition_order[row]
