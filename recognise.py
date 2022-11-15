@@ -85,7 +85,7 @@ class BasicGenerationSorted:
                 self.insert_new_exemplar(exemplar)
 
     def is_empty(self):
-        if len(self.exemplars) == 0:
+        if len(self.entries) == 0:
             return True
         return False
 
@@ -124,9 +124,9 @@ def grow_non_basic_over_basic(exemplar):
         target_global_node_id, predicted_point, predicted_mass, predicted_LUE_id \
                 = exemplar.make_prediction_for_next_event()
 
-        local_events_ids_list = exemplar.get_no_more_MAX_events_around_point_by_LUE(predicted_point,
+        local_events_list = exemplar.get_no_more_MAX_events_around_point_by_LUE(predicted_point,
                                                                                        predicted_LUE_id, MAX=1)
-        if len(local_events_ids_list) == 0:
+        if len(local_events_list) == 0:
             return exemplar, all_non_success
 
-        exemplar.add_event_check_result(target_global_node_id, local_events_ids_list[0])
+        exemplar.add_event_check_result(target_global_node_id, local_events_list[0].local_cogmap_id)

@@ -16,14 +16,16 @@ class NodeRecognitionRes:
         if self.structure_node.actual_m_hist is None:
             return None
         predicted_mass = self.structure_node.mass
-        self.structure_node.actual_m_hist.get_probability_of_event(real_value=self.mass, predicted_value=predicted_mass)
+        probability = self.structure_node.actual_m_hist.get_probability_of_event(real_value=self.mass, predicted_value=predicted_mass)
+        return probability
 
     def eval_du_probability(self):
         if self.structure_node.actual_du_hist is None:
             return None
         predicted_du = 0
         real_du = norm(self.du)
-        self.structure_node.actual_m_hist.get_probability_of_event(real_value=real_du, predicted_value=predicted_du)
+        probability = self.structure_node.actual_m_hist.get_probability_of_event(real_value=real_du, predicted_value=predicted_du)
+        return probability
 
 class Exemplar:
     def __init__(self, structure, cogmap):
@@ -63,7 +65,7 @@ class Exemplar:
         else:
             self.list_non_basic_nodes_ids_to_recognise.remove(global_node_id)
 
-        self.add_event_check_result_DAMMY(self, global_node_id, local_cogmap_id)
+        self.add_event_check_result_DAMMY(global_node_id, local_cogmap_id)
 
     def add_event_check_result_DAMMY(self, global_node_id, local_cogmap_id):
         self.nodes_local_ids[global_node_id] = local_cogmap_id
@@ -92,7 +94,7 @@ class Exemplar:
         next_global_node_id = self.get_next_event_global_id()
         parent_global_id, u_from_parent, predicted_mass, predicted_LUE_id =\
             self.structure.get_info_to_recognise_node(next_global_node_id)
-        parent_event_point = self.nodes_points[parent_global_id]
+        parent_event_point = self.get_point_by_global_node_id(parent_global_id)
         predicted_point = parent_event_point + u_from_parent
         return next_global_node_id, predicted_point, predicted_mass, predicted_LUE_id
 

@@ -148,7 +148,7 @@ def VIS_nodes_info_struct(struct, logger):
 
 def VIS_nodes_info_exemplar(exemplar, logger):
     # для каждой ноды гистограмму и на ней отрисовать палочками истинное значение и реальное
-    nrows = len(exemplar)
+    nrows = max(len(exemplar),2)
     ncols = 2
 
     fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
