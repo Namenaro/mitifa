@@ -50,7 +50,7 @@ def sample_experimental_node(train_maps, exparimental_struct, target_node_id):
     exp_node_masses_sample = []
     exp_node_dus_sample = []
     for cogmap in train_maps:
-        best_experimental_exemplar, experimental_succes = recognize_experimental_struct(exparimental_struct, cogmap)
+        best_experimental_exemplar, experimental_succes = recognize_experimental_struct(exparimental_struct, cogmap, target_node_id)
         if experimental_succes:
             node_recognition_res = best_experimental_exemplar.get_node_recognition_res(target_node_id)
             du = my_norm(node_recognition_res.du)

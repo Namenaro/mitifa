@@ -31,7 +31,7 @@ class BasicStructBuilder:
         # создаем первое базовое событие, беря за основу небазовое первое событие из dammy_struct, по которой мы строим сейчас базовую стр-ру
         self.init_first_base_node()
 
-        j=1
+        j = 1
         self.logger.add_text("Добавление " + str(j) + "-ой ноды в растущую стрктуру:")
         self.logger.add_fig(VIS_struct_as_graph(self.result_struct))
         VIS_nodes_info_struct(self.result_struct, logger=self.logger)
@@ -49,10 +49,7 @@ class BasicStructBuilder:
             exp_node_masses_sample, exp_node_dus_sample = sample_experimental_node(self.context.train_maps, self.result_struct, target_node_id=node_global_id)
 
             # делаем этот узел базовым:
-            actual_m_hist = Hist(exp_node_masses_sample)
-            actual_du_hist = Hist(exp_node_dus_sample)
-            self.result_struct.nodes_dict[node_global_id].actual_m_hist =actual_m_hist
-            self.result_struct.nodes_dict[node_global_id].actual_du_hist = actual_du_hist
+            self.result_struct.make_node_basic(node_global_id, exp_node_masses_sample, exp_node_dus_sample)
 
             self.logger.add_text(" полученная не релаксированная версия базовой части структуры :")
             self.logger.add_fig(VIS_struct_as_graph(self.result_struct))

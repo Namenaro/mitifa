@@ -53,9 +53,11 @@ class Exemplar:
         for global_node_id, node_recognition_res in self.nodes_recognition_results.items():
             mass_probability = node_recognition_res.eval_m_probability()
             du_probability = node_recognition_res.eval_du_probability()
-
-            exemplar_non_triviality += mass_probability
-            exemplar_non_triviality += du_probability
+            if mass_probability is None or du_probability is None:
+                pass  # возможно, тут стоит прописать отрицательный вклад?
+            else:
+                exemplar_non_triviality += (1 - mass_probability)
+                exemplar_non_triviality += (1 - du_probability)
         return exemplar_non_triviality
 
     def add_event_check_result(self, global_node_id, local_cogmap_id):

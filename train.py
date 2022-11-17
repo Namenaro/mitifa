@@ -14,7 +14,7 @@ def manual_train():
 
 
     # вручную заданный список событий на context.etalon_map
-    events_ids_list = [2, 5, 1, 8]
+    events_ids_list = [0,2,3, 1, 8,9,    13]
     logger.add_text(" Вручную выбраны события: " + str(events_ids_list))
 
 
@@ -38,7 +38,7 @@ def manual_train():
     logger.add_text("Выращиваем базовую структуру по dammy структуре...")
     struct_builder = BasicStructBuilder(dammy_struct, context, logger)
     result_basic_struct = struct_builder.get_basic_struct(need_relax=False, need_readress=False)
-
+    print("Basic struct is created, num of nodes = " + str(len(result_basic_struct)))
 
     # оцениваем обученную структуру:--------------------------------------------------------
     logger.add_line_big()

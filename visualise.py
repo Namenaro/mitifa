@@ -195,7 +195,7 @@ def visualise_classification_properties_of_basic_struct(basic_struct, constrast_
     fig, ax = plt.subplots()
     ax.set_xlim(left, right)
     _, bins, _ = ax.hist(non_trivs_contrast, color='b', label='contrast')
-    _ = ax.hist(non_trivs_target, bins=bins, color='g', label='taget', alpha=0.5)
+    _ = ax.hist(non_trivs_target, bins=bins, color='r', label='taget', alpha=0.5)
     plt.legend(loc='upper right')
     return fig
 

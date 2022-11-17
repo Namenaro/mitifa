@@ -10,10 +10,12 @@ from exemplar import *
 #  две основные пользовательские функции:
 #-----------------------------------------------------------------
 
-def recognize_experimental_struct(structure, cogmap):  # return best exemplar and succes|not_success
+def recognize_experimental_struct(structure, cogmap, target_node_id):  # return best exemplar and succes|not_success
     best_basic_exemplar, basic_success = recognize_basic_struct(structure, cogmap)
     if basic_success:
-        best_experimental_exemplar, non_basic_success = grow_non_basic_over_basic(best_basic_exemplar)
+        best_experimental_exemplar, non_basic_success = grow_non_basic_over_basic(best_basic_exemplar, target_node_id)
+    else:
+        best_experimental_exemplar = best_basic_exemplar
 
     experimental_succes = basic_success and non_basic_success
     return best_experimental_exemplar, experimental_succes
@@ -25,7 +27,7 @@ def recognize_basic_struct(structure, cogmap):  # returns best basic exemplar an
     basic_success = True
     basic_non_success = False
 
-    prev_generation = BasicGenerationSorted()
+
     current_generation = BasicGenerationSorted()
     current_generation.init_as_first_generation(structure, cogmap)
     next_generation = BasicGenerationSorted()
@@ -33,9 +35,8 @@ def recognize_basic_struct(structure, cogmap):  # returns best basic exemplar an
     while True:
         # проверим критерий аварийного останова
         if current_generation.is_empty():
-            if prev_generation.is_empty():
-                return Exemplar(structure, cogmap), basic_non_success
-            return prev_generation.get_best_exemplar(), basic_non_success
+            return Exemplar(structure, cogmap), basic_non_success
+
 
         # проверяем критерий хорошего останова
         best_done_basic_exemplar = current_generation.try_find_done_basic_exemplar()
@@ -43,8 +44,8 @@ def recognize_basic_struct(structure, cogmap):  # returns best basic exemplar an
             return best_done_basic_exemplar, basic_success
 
         # заполняем следующее поколение
-        for exemplar in current_generation.exemplars:
-            children_exemplars_list = get_children_for_exemplar(exemplar, GROW_MAX)
+        for exemplar_entry in current_generation.entries:
+            children_exemplars_list = get_children_for_exemplar(exemplar_entry.exemplar, GROW_MAX)
             for child_exemplar in children_exemplars_list:
                 next_generation.insert_new_exemplar(child_exemplar)
 
@@ -52,7 +53,6 @@ def recognize_basic_struct(structure, cogmap):  # returns best basic exemplar an
         next_generation.cut_extra_exemplars(SURVIVIVING_MAX)
 
         # переключаем поколения
-        prev_generation = current_generation
         current_generation = next_generation
         next_generation = BasicGenerationSorted()
 
@@ -96,7 +96,7 @@ class BasicGenerationSorted:
         return None
 
 
-def get_children_for_exemplar( exemplar, GROW_MAX): # наращивание на один шаг
+def get_children_for_exemplar(exemplar, GROW_MAX): # наращивание на один шаг
     children_exemplars_list = []
 
     # делаем идеализированное предсказание:
@@ -105,20 +105,19 @@ def get_children_for_exemplar( exemplar, GROW_MAX): # наращивание н�
 
     # находим не более GROW_MAX кандидатов на его результат проверки
     # причем событий-кандидатов проверяем, не учтено ли оно уже в этом экземпляре
-    local_evends_ids_list = exemplar.get_no_more_MAX_events_around_point_by_LUE(predicted_point, predicted_LUE_id, GROW_MAX)
-    for local_evend_id in local_evends_ids_list:
+    local_evends_list = exemplar.get_no_more_MAX_events_around_point_by_LUE(predicted_point, predicted_LUE_id, GROW_MAX)
+    for local_event in local_evends_list:
         child_exemplar = deepcopy(exemplar)
-        child_exemplar.add_event_check_result(target_global_node_id, local_evend_id)
+        child_exemplar.add_event_check_result(target_global_node_id, local_event.local_cogmap_id)
+        children_exemplars_list.append((child_exemplar))
     return children_exemplars_list
 
 
-def grow_non_basic_over_basic(exemplar):
+def grow_non_basic_over_basic(exemplar, target_node_id):
     all_success = True
     all_non_success = False
 
     while True:
-        if exemplar.is_recognition_done():
-            return exemplar, all_success
 
         # делаем идеализированное предсказание:
         target_global_node_id, predicted_point, predicted_mass, predicted_LUE_id \
@@ -130,3 +129,5 @@ def grow_non_basic_over_basic(exemplar):
             return exemplar, all_non_success
 
         exemplar.add_event_check_result(target_global_node_id, local_events_list[0].local_cogmap_id)
+        if target_global_node_id == target_node_id:
+            return exemplar, all_success

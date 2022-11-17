@@ -66,3 +66,12 @@ class Structure:
     def __len__(self):
         return len(self.recognition_order)
 
+    def make_node_basic(self, global_node_id, masses_sample, dus_sample):
+        actual_m_hist = Hist(masses_sample)
+        actual_du_hist = Hist(dus_sample)
+        self.nodes_dict[global_node_id].actual_m_hist = actual_m_hist
+        self.nodes_dict[global_node_id].actual_du_hist = actual_du_hist
+        self.basic_nodes_ids.add(global_node_id)
+        self.non_basic_nodes_ids.remove(global_node_id)
+
+
