@@ -59,3 +59,21 @@ def get_all_u_data_for_start_node(start_node_point, cogmap_events_ids_list, cogm
         dist = my_dist(start_node_point, end_node_point)
         result_array_us.append(dist)
     return result_array_us
+
+
+def get_hists_for_every_basic_node_of_struct(struct, cogmaps):
+    m_dict = {}
+    du_dict = {}
+
+    for basic_global_event_id in struct.basic_nodes_ids:
+        m_dict[basic_global_event_id] = []
+        du_dict[basic_global_event_id] = []
+
+    for cogmap in cogmaps:
+        exemplar, basic_success = recognize_basic_struct(struct, cogmap)
+        if basic_success:
+            for basic_global_event_id in struct.basic_nodes_ids:
+                rec_node = exemplar.get_node_recognition_res(basic_global_event_id)
+                m_dict[basic_global_event_id].append(rec_node.mass)
+                du_dict[basic_global_event_id].append(my_norm(rec_node.du))
+    return m_dict, du_dict

@@ -68,10 +68,10 @@ class StructRelaxer:
         samples_list_x = list([[] for _ in range(len(nodes_ids_list))])
         samples_list_y = list([[] for _ in range(len(nodes_ids_list))])
         for exemplar in exemplars:
-            start_point = exemplar.get_point_by_global_node_id(self, start_node_id)
+            start_point = exemplar.get_point_by_global_node_id(start_node_id)
             for i in range(len(nodes_ids_list)):
                 end_node_id = nodes_ids_list[i]
-                end_point = exemplar.get_point_by_global_node_id(self, end_node_id)
+                end_point = exemplar.get_point_by_global_node_id(end_node_id)
                 x = end_point.x - start_point.x
                 y = end_point.y - start_point.y
                 samples_list_x[i].append(x)

@@ -6,38 +6,6 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
 
 
-def get_optimized_graph(adjacency_matrix, id_list):
-    Tcsr = minimum_spanning_tree(adjacency_matrix)
-    min_tree = Tcsr.toarray().astype(float)
-    min_tree = min_tree.T
-
-    if len(min_tree[0]) != len(id_list):
-        print("Amount of ids don't match with adjacency matrix!")
-        return None
-
-    else:
-        root = get_root(min_tree)
-        order = traverse(min_tree, root)
-
-        graph_nodes = []
-        for i in range(len(id_list)):
-            du = get_du_from_parent(min_tree, i)
-            parent_ind = get_parent(min_tree, i)
-
-            if parent_ind is None:
-                graph_nodes.append(GraphNode(id_list[i], du, None))
-            else:
-                graph_nodes.append(GraphNode(id_list[i], du, id_list[parent_ind]))
-
-        path = Graph()
-        for node_id in order:
-            path.recognition_order.append(id_list[node_id])
-
-        for node in graph_nodes:
-            path.nodes_dict[node.global_node_id] = node
-
-        return path
-
 class GraphNode:
     def __init__(self, global_node_id, u_from_parent, parent_global_node_id):
         self.global_node_id = global_node_id
@@ -100,14 +68,15 @@ class Graph:
 
 
 def get_root(tree):
+    roots = []
     for i in range(len(tree[0])):
         count = 0
         for j in range(len(tree)):
             if tree[j][i] == 0:
                 count += 1
         if count == len(tree):
-            return i
-    return None
+            roots.append(i)
+    return roots
 
 
 def get_children(tree, node):
@@ -143,5 +112,73 @@ def traverse(tree, node, path=None):
         traverse(tree, node, path)
 
     return path
+
+
+def get_leaves(matrix):
+    leaves = []
+    roots = get_root(matrix)
+    for i in range(len(matrix)):
+        num_zeros = len(matrix[i][np.where(matrix[i] == 0)])
+        if num_zeros == len(matrix) - 1 and i in roots:
+            leaves.append(i)
+    return leaves
+
+
+def transpose_row(matrix, index):
+    tmp_row = matrix[index]
+
+    for i in range(len(matrix)):
+        tmp_col_el = matrix[i][index]
+        matrix[i][index] = tmp_row[i]
+        matrix[index][i] = tmp_col_el
+
+    return matrix
+
+
+def get_oriented_mat(matrix):
+    leaves = get_leaves(matrix)
+    for leaf in leaves:
+        matrix = transpose_row(matrix, leaf)
+
+    return matrix
+
+
+def get_optimized_graph(adjacency_matrix, id_list):
+    Tcsr = minimum_spanning_tree(adjacency_matrix)
+    min_tree = Tcsr.toarray().astype(float)
+
+    if len(min_tree[0]) != len(id_list):
+        print("Amount of ids don't match with adjacency matrix!")
+        return None
+
+    else:
+        roots = get_root(min_tree)
+
+        if len(roots) > 1:
+            min_tree = get_oriented_mat(min_tree)
+            roots = get_root(min_tree)
+
+        root = roots[0]
+
+        order = traverse(min_tree, root)
+
+        graph_nodes = []
+        for i in range(len(id_list)):
+            du = get_du_from_parent(min_tree, i)
+            parent_ind = get_parent(min_tree, i)
+
+            if parent_ind is None:
+                graph_nodes.append(GraphNode(id_list[i], du, None))
+            else:
+                graph_nodes.append(GraphNode(id_list[i], du, id_list[parent_ind]))
+
+        path = Graph()
+        for node_id in order:
+            path.recognition_order.append(id_list[node_id])
+
+        for node in graph_nodes:
+            path.nodes_dict[node.global_node_id] = node
+
+        return path
 
 

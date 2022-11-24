@@ -1,4 +1,5 @@
 from hists import Hist
+from utils import get_cmap
 
 class Node:
     def __init__(self, global_node_id, u_from_parent, parent_global_node_id, mass, LUE_id):
@@ -22,10 +23,19 @@ class Node:
 class Structure:
     def __init__(self):
         self.nodes_dict = {}  # {node_global_id: Node}
+        self.nodes_colors = {}  # {node_global_id: color}
         self.recognition_order = []  # [node_global_id_1, ..., node_global_id_n]
 
         self.basic_nodes_ids = set()
         self.non_basic_nodes_ids = set()
+
+    def reinit_colors(self):
+        cmap = get_cmap(len(self.recognition_order))
+        for i in range(len(self.recognition_order)):
+            self.nodes_colors[self.recognition_order[i]] = cmap(i)
+
+    def get_event_color(self, global_event_id):
+        return self.nodes_colors[global_event_id]
 
     def max_non_triviality(self):
         return 2*len(self.recognition_order)
@@ -49,6 +59,7 @@ class Structure:
             self.basic_nodes_ids.add(global_node_id)
             self.nodes_dict[global_node_id].actual_m_hist = actual_m_hist
             self.nodes_dict[global_node_id].actual_du_hist = actual_du_hist
+        self.reinit_colors()
 
 
     def get_first_global_event_id(self):

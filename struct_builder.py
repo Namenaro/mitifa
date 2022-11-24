@@ -7,7 +7,8 @@ from struct_builder_utils import get_dammy_struct_from_events_list
 from hists import Hist
 from struct_relaxer import StructRelaxer
 from utils import *
-from visualise import *
+from visualise_objects import *
+from visualise_top import *
 
 
 class BasicStructBuilder:
@@ -34,7 +35,7 @@ class BasicStructBuilder:
         j = 1
         self.logger.add_text("Добавление " + str(j) + "-ой ноды в растущую стрктуру:")
         self.logger.add_fig(VIS_struct_as_graph(self.result_struct))
-        VIS_nodes_info_struct(self.result_struct, logger=self.logger)
+        VIS_nodes_info_struct(self.result_struct, logger=self.logger, target_maps=self.context.train_maps)
         self.logger.add_line_little()
 
         # перебираем все события self.dammy_struct кроме первого
@@ -46,14 +47,14 @@ class BasicStructBuilder:
             self.result_struct.add_node(node_global_id, u_from_parent, parent_global_node_id, mass, LUE_id)
 
             # для него получаем выбоки, обусловленные на всю уже построенную базовую структуру (она = текущая self.result_struct)
-            exp_node_masses_sample, exp_node_dus_sample = sample_experimental_node(self.context.train_maps, self.result_struct, target_node_id=node_global_id)
+            exp_node_masses_sample, exp_node_dus_sample = sample_experimental_node(self.context.contrast_maps, self.result_struct, target_node_id=node_global_id)
 
             # делаем этот узел базовым:
             self.result_struct.make_node_basic(node_global_id, exp_node_masses_sample, exp_node_dus_sample)
 
             self.logger.add_text(" полученная не релаксированная версия базовой части структуры :")
             self.logger.add_fig(VIS_struct_as_graph(self.result_struct))
-            VIS_nodes_info_struct(self.result_struct, logger=self.logger)
+            VIS_nodes_info_struct(self.result_struct, logger=self.logger, target_maps=self.context.train_maps)
 
 
             if need_relax:
@@ -65,8 +66,8 @@ class BasicStructBuilder:
                 self.logger.add_fig(VIS_struct_as_graph(self.result_struct))
                 self.logger.save()
 
-                # реузльтаты релаксации из переносим в result_struct
-                for node_id, node_exemplar in self.dammy_struct.items():
+                # реузльтаты релаксации переносим в result_struct
+                for node_id, node_exemplar in self.dammy_struct.nodes_dict.items():
                     self.result_struct.nodes_dict[node_id].u_from_parent = node_exemplar.u_from_parent
                     self.result_struct.nodes_dict[node_id].parent_global_node_id = node_exemplar.parent_global_node_id
                     self.result_struct.nodes_dict[node_id].mass = node_exemplar.mass

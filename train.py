@@ -1,5 +1,6 @@
 from context import *
-from visualise import *
+from visualise_objects import *
+from visualise_top import *
 from cogmap import *
 from struct_builder import *
 
@@ -14,7 +15,7 @@ def manual_train():
 
 
     # вручную заданный список событий на context.etalon_map
-    events_ids_list = [0,2,3, 1, 8,9,    13]
+    events_ids_list = [0,3, 1,8,6]
     logger.add_text(" Вручную выбраны события: " + str(events_ids_list))
 
 
@@ -64,6 +65,12 @@ def manual_train():
     logger.add_text(" Подробный пример распознавания:")
     VIS_detailed_exemplar_of_struct(context.train_maps[1], result_basic_struct, logger)
     logger.save()
+
+
+    # отдельный лог процесса распознавания на одной когмапе-------------------------
+    logger_recogn = HtmlLogger("RECOG LOG")
+    cogmap = context.train_maps[3]
+    recognize_basic_struct(result_basic_struct, cogmap, logger_recogn)
 
 
 if __name__ == '__main__':

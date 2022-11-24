@@ -43,7 +43,7 @@ def get_default_context():
     rule2 = LUERule(dx=1, dy=0, max_rad=5, is_horizontal=False, id_gen=LUE_events_ids_gen)
     LUE_rules_list = [rule1, rule2]
 
-    context = Context(LUE_rules_list, class_num=147, contrast_sample_len=30)
+    context = Context(LUE_rules_list, class_num=135, contrast_sample_len=30)
     return context
 
 if __name__ == '__main__':
