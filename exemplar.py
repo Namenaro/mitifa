@@ -94,7 +94,7 @@ class Exemplar:
         self.nodes_recognition_results[global_node_id] = node_recognition_res
     def make_prediction_for_next_event(self):
         next_global_node_id = self.get_next_event_global_id()
-        parent_global_id, u_from_parent, predicted_mass, predicted_LUE_id =\
+        parent_global_id, u_from_parent, predicted_mass, predicted_LUE_id,_ =\
             self.structure.get_info_to_recognise_node(next_global_node_id)
         parent_event_point = self.get_point_by_global_node_id(parent_global_id)
         predicted_point = parent_event_point + u_from_parent
@@ -127,7 +127,21 @@ class Exemplar:
         return self.nodes_recognition_results[global_node_id].point
 
     def get_node_recognition_res(self, global_node_id):
-        return self.nodes_recognition_results[global_node_id]
+        return self.nodes_recognition_results.get(global_node_id, None)
+
+    def try_get_event_check_result_by_linked_event(self, target_global_node_id):
+        # если слинкованноuj к данному в принципе НЕТ в стр-ре, то возвращаем None
+        linked_global_event = self.structure.try_get_linked_global_event(target_global_node_id)
+        if linked_global_event is None:
+            return None
+
+        # если слинкованное к данному в принципе есть в стр-ре, но еще НЕ попало в даннй экземпляр, то возвращаем None
+        node_local_id = self.nodes_local_ids.get(linked_global_event, None)
+        if node_local_id is None:
+            return None
+
+        # иначе возвращаем локальный айдишник слинованного события, зареганного в экземпляре
+        return self.cogmap.get_linked_event_id(node_local_id)
 
 
 

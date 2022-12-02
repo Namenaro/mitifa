@@ -15,7 +15,7 @@ class BasicGenerationSorted:
     def insert_new_exemplar(self, exemplar):
         non_triviality = exemplar.eval_exemplar()
         entry = ExemplarEntry(exemplar, non_triviality)
-        insort(self.entries, entry, key=lambda x: -x.non_triviality) # в порядке убывания
+        insort(self.entries, entry, key=lambda x: -x.non_triviality)  # в порядке убывания
 
     def cut_extra_exemplars(self, surviving_max):
         if len(self.entries) > surviving_max:
@@ -23,7 +23,7 @@ class BasicGenerationSorted:
 
     def init_as_first_generation(self, structure, cogmap):
         global_node_id = structure.get_first_global_event_id()
-        _, _, _, first_LUE_id = structure.get_info_to_recognise_node(global_node_id)
+        _, _, _, first_LUE_id, _ = structure.get_info_to_recognise_node(global_node_id)
         for local_event_id, LUECogmapEvent in cogmap.LUE_events.items():
             if LUECogmapEvent.LUE_id == first_LUE_id:
                 exemplar = Exemplar(structure, cogmap)

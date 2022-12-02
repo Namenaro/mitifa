@@ -37,3 +37,12 @@ def get_all_pics_for_training(class_num, contrast_sample_len):
     etalon_pic = all_train_pics[0]
     train_pics = all_train_pics[1:]
     return etalon_pic, train_pics, test_pics, contrast_pics
+
+def get_contrast(class_num, sample_len):
+    ominset = datasets.Omniglot(root='./data_om', download=True, transform=None)
+    indexes = random.sample(range(0, len(ominset)), sample_len)
+    contrast = []
+    for i in indexes:
+        if class_num != ominset[i][1]:
+            contrast.append(binarise_img(ominset[i][0]))
+    return contrast

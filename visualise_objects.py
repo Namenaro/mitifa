@@ -49,13 +49,13 @@ def VIS_LUE_cogmap_first_generation(cogmap, logger):
     logger.save()
 
 def VIS_exemplar_as_graph(exemplar,need_annotations):
+    plt.close('all')
     fig, ax = plt.subplots()
 
-    #title = str(exemplar.eval_exemplar()) + "-exempl "
-    title = "-exempl "
+    title = str(exemplar.eval_exemplar())
     if not exemplar.is_recognition_done():
         title += ":NOT FULL"
-    fig.title = title
+    fig.suptitle(title, fontsize=20)
 
     cm = plt.get_cmap('gray')
     pic = exemplar.cogmap.pic
@@ -73,7 +73,8 @@ def VIS_exemplar_as_graph_to_ax(ax, exemplar, need_annotations):
         # рисуем событие на карте:
         index = exemplar.structure.recognition_order.index(global_node_id) # номер этого события в порядке распознавания
         marker = '$' + str(index) + '$'
-        ax.scatter(coord.x, coord.y, c='green', marker=marker, alpha=0.8, s=200)
+        color = exemplar.structure.get_event_color(global_node_id)
+        ax.scatter(coord.x, coord.y, c=[color], marker=marker, alpha=0.8, s=200)
 
         # если надо, то еще и делаем к событию сноску с подровностями:
         if need_annotations:
@@ -102,6 +103,7 @@ def VIS_exemplar_as_graph_to_ax(ax, exemplar, need_annotations):
 
 
 def VIS_struct_as_graph(struct):
+    plt.close('all')
     fig, ax = plt.subplots()
     title = "struct (green=basic)"
     fig.title = title

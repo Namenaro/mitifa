@@ -86,6 +86,7 @@ class HtmlLogger:
         self.html += '<img src=\'data:image/png;base64,{}\'>'.format(encoded) + '<br>'
         plt.close(fig)
 
+
     def save(self):
         filename = self.name + '.html'
         with open(filename, 'w') as f:

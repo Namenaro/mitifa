@@ -7,50 +7,16 @@ class Hist:
     def __init__(self, sample):
         self.sample = sample
 
-    @staticmethod
-    def get_bin(bin_edges, val):
-        if val == bin_edges[-1]:
-            return len(bin_edges) - 2
-        else:
-            for i in range(len(bin_edges) - 1):
-                if bin_edges[i] <= val < bin_edges[i + 1]:
-                    return i
-        return -1
-
     def get_probability_of_event(self, real_value, predicted_value):
-
-        if real_value < predicted_value:
-            min = real_value
-            max = predicted_value
-
-        elif real_value > predicted_value:
-            min = predicted_value
-            max = real_value
-
-        elif real_value == predicted_value:
-            return 0
-
-        heights, bin_edges = np.histogram(self.sample, density=True)
-
-        bin_width = bin_edges[1] - bin_edges[0]
-        left_bin = self.get_bin(bin_edges, min)
-        right_bin = self.get_bin(bin_edges, max)
-
-        if left_bin == -1 or right_bin == -1:
-            return None
-
-        if left_bin == right_bin:
-            prob = (max - min) * heights[left_bin]
-            return prob
-
-        else:
-            left_border = bin_edges[left_bin + 1] - min
-            right_border = max - bin_edges[right_bin]
-
-            border_sum = left_border * heights[left_bin] + right_border * heights[right_bin]
-            prob = bin_width * sum(heights[left_bin + 1:right_bin]) + border_sum
-
-        return prob
+        # Считаем все образцы, которые попадают в событие
+        counter_of_fitted = 0
+        left_val = min(real_value, predicted_value)
+        right_val = max(real_value, predicted_value)
+        for example in self.sample:
+            if left_val <= example <= right_val:
+                counter_of_fitted+=1
+        prob_of_event = counter_of_fitted/len(self.sample)
+        return prob_of_event
 
     def show_hist(self):
         plt.hist(self.sample, density=True, edgecolor="black")

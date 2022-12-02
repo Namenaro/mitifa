@@ -35,12 +35,20 @@ def get_dammy_struct_from_events_list(cogmap_events_ids_list, cogmap):
         child_point, mass, LUE_id = cogmap.get_event_data(local_node_id)
         u_from_parent = Point(x=child_point.x - parent_point.x, y=child_point.y - parent_point.y)
 
+        linked_global_node_id = try_get_linked_global_node_id(dammy_exemplar, local_node_id)
         dammy_struct.add_node(global_node_id=dammy_global_node_id,
                               u_from_parent=u_from_parent, parent_global_node_id=parent_global_node_id,
-                              mass=mass, LUE_id=LUE_id)
+                              mass=mass, LUE_id=LUE_id, linked_global_node_id=linked_global_node_id)
         dammy_exemplar.add_event_check_result_DAMMY(dammy_global_node_id, local_cogmap_id=local_node_id)
 
     return dammy_struct, dammy_exemplar
+
+def try_get_linked_global_node_id(exemplar, local_node_id):
+    # ищем в когмапе связанное событие для события local_node_id
+    linked_local_node_id = exemplar.cogmap.get_linked_event_id(local_node_id)
+
+    # если оно уже учтено в экземпляре, то возвращаем его глобальный  id
+    return exemplar.get_global_id_by_local_id(linked_local_node_id)
 
 
 def events_list_to_matrix(cogmap_events_ids_list, cogmap):

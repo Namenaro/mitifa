@@ -41,7 +41,7 @@ def recognize_basic_struct(structure, cogmap, logger=None):  # returns best basi
     while True:
         # проверим критерий аварийного останова
         if current_generation.is_empty():
-            return Exemplar(structure, cogmap), basic_non_success
+            return Exemplar(structure, cogmap), basic_non_success  # TODO надо вернуть луший из предыдущего поколения! для этого его сохранять
 
         # проверяем критерий хорошего останова
         best_done_basic_exemplar = current_generation.try_find_done_basic_exemplar()
@@ -60,7 +60,7 @@ def recognize_basic_struct(structure, cogmap, logger=None):  # returns best basi
         next_generation.cut_extra_exemplars(SURVIVIVING_MAX)
 
         # переключаем поколения
-        current_generation = next_generation
+        current_generation = deepcopy(next_generation)
         next_generation = BasicGenerationSorted()
 
         if logger is not None:
@@ -80,6 +80,14 @@ def get_children_for_exemplar(exemplar, GROW_MAX): # наращивание на
     target_global_node_id, predicted_point, predicted_mass, predicted_LUE_id\
         = exemplar.make_prediction_for_next_event()
 
+
+    # если уже есть связанное событие на карте, то результат распознавания однозначен
+    target_local_event_id = exemplar.try_get_event_check_result_by_linked_event(target_global_node_id)
+    if target_local_event_id is not None:
+        child_exemplar = deepcopy(exemplar)
+        child_exemplar.add_event_check_result(target_global_node_id, target_local_event_id)
+        return [child_exemplar]
+
     # находим не более GROW_MAX кандидатов на его результат проверки
     # причем событий-кандидатов проверяем, не учтено ли оно уже в этом экземпляре
     local_evends_list = exemplar.get_no_more_MAX_events_around_point_by_LUE(predicted_point, predicted_LUE_id, GROW_MAX)
@@ -95,10 +103,15 @@ def grow_non_basic_over_basic(exemplar, target_node_id):
     all_non_success = False
 
     while True:
-
         # делаем идеализированное предсказание:
         target_global_node_id, predicted_point, predicted_mass, predicted_LUE_id \
                 = exemplar.make_prediction_for_next_event()
+
+        # если уже есть связанное событие на карте, то результат распознавания однозначен
+        target_local_event_id = exemplar.try_get_event_check_result_by_linked_event(target_global_node_id)
+        if target_local_event_id is not None:
+            exemplar.add_event_check_result(target_global_node_id, target_local_event_id)
+            return exemplar, all_success
 
         local_events_list = exemplar.get_no_more_MAX_events_around_point_by_LUE(predicted_point,
                                                                                        predicted_LUE_id, MAX=1)

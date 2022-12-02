@@ -41,7 +41,8 @@ class LUECogmap:
 
         self.local_ids_gen = IdsGenerator()
         self.points_to_events = {}  # {point:  [LUECogmapEvent] }
-        self.LUE_events = {} # {local_event_id:  LUECogmapEvent }
+        self.LUE_events = {}  # {local_event_id:  LUECogmapEvent }
+        self.events_links = {} # {local_event_id:  local_event_id }
 
     def __eq__(self, other):
         return (self.pic == other.pic).all()
@@ -74,19 +75,23 @@ class LUECogmap:
 
         if len(found_seqs) > 0:
             for seq in found_seqs:
-
+                local_cogmap_id_start = self.local_ids_gen.generate_id()
+                local_cogmap_id_end = self.local_ids_gen.generate_id()
                 start_event = LUECogmapEvent(seq, LUE_id=rule.start_LUE_id,
                                              is_horizonral=rule.is_horizontal,
                                              point=seq[-1],
-                                             local_cogmap_id=self.local_ids_gen.generate_id(),
+                                             local_cogmap_id=local_cogmap_id_start,
                                              cogmap=self)
                 end_event = LUECogmapEvent(seq, LUE_id=rule.end_LUE_id,
                                            is_horizonral=rule.is_horizontal,
                                            point=seq[0],
-                                           local_cogmap_id=self.local_ids_gen.generate_id(),
+                                           local_cogmap_id= local_cogmap_id_end,
                                            cogmap=self)
                 self._register_LUE_event(start_event)
                 self._register_LUE_event(end_event)
+
+                self.events_links[local_cogmap_id_start] = local_cogmap_id_end
+                self.events_links[local_cogmap_id_end] = local_cogmap_id_start
 
     def get_event_data(self, local_event_id):
         lue_event = self.LUE_events[local_event_id]
@@ -118,3 +123,6 @@ class LUECogmap:
                                 if len(result_events_list) == MAX_EVENTS:
                                     break
         return result_events_list
+
+    def get_linked_event_id(self, local_node_id):
+        return self.events_links[local_node_id]

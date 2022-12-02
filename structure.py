@@ -29,6 +29,8 @@ class Structure:
         self.basic_nodes_ids = set()
         self.non_basic_nodes_ids = set()
 
+        self.linked_pairs = {}  # {first_global_node_id: second_global_node_id}
+
     def reinit_colors(self):
         cmap = get_cmap(len(self.recognition_order))
         for i in range(len(self.recognition_order)):
@@ -42,16 +44,17 @@ class Structure:
 
     def get_info_to_recognise_node(self, global_node_id):
         node = self.nodes_dict[global_node_id]
-        return node.parent_global_node_id, node.u_from_parent, node.mass, node.LUE_id
+        linked_global_id = self.try_get_linked_global_event(global_node_id)
+        return node.parent_global_node_id, node.u_from_parent, node.mass, node.LUE_id, linked_global_id
 
     def event_is_basic(self, global_node_id):
         if global_node_id in self.basic_nodes_ids:
             return True
         return False
 
-    def add_node(self, global_node_id, u_from_parent, parent_global_node_id, mass, LUE_id, actual_m_hist=None, actual_du_hist=None):
+    def add_node(self, global_node_id, u_from_parent, parent_global_node_id, mass, LUE_id, actual_m_hist=None, actual_du_hist=None, linked_global_node_id=None):
         new_node = Node(global_node_id, u_from_parent, parent_global_node_id, mass, LUE_id)
-        self.nodes_dict[global_node_id]=new_node
+        self.nodes_dict[global_node_id] = new_node
         self.recognition_order.append(global_node_id)
         if actual_m_hist is None:
             self.non_basic_nodes_ids.add(global_node_id)
@@ -60,6 +63,7 @@ class Structure:
             self.nodes_dict[global_node_id].actual_m_hist = actual_m_hist
             self.nodes_dict[global_node_id].actual_du_hist = actual_du_hist
         self.reinit_colors()
+        self.add_new_nodes_link(global_node_id, linked_global_node_id)
 
 
     def get_first_global_event_id(self):
@@ -84,5 +88,15 @@ class Structure:
         self.nodes_dict[global_node_id].actual_du_hist = actual_du_hist
         self.basic_nodes_ids.add(global_node_id)
         self.non_basic_nodes_ids.remove(global_node_id)
+
+    def try_get_linked_global_event(self, target_global_node_id):
+        return self.linked_pairs.get(target_global_node_id, None)
+
+    def add_new_nodes_link(self, first_global_node_id, second_global_node_id):
+        if first_global_node_id == None or second_global_node_id is None:
+            return
+        self.linked_pairs[first_global_node_id] = second_global_node_id
+        self.linked_pairs[second_global_node_id] = first_global_node_id
+
 
 

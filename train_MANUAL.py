@@ -7,7 +7,7 @@ from struct_builder import *
 def manual_train():
     # Служебное:
     logger = HtmlLogger("TRAIN LOG")
-    context = get_default_context()
+    context = get_default_context(239)
 
     # отрисовываем пример когнитивной карты LUE-событий
     VIS_LUE_cogmap_first_generation(cogmap=context.etalon_map, logger=logger)
@@ -15,7 +15,7 @@ def manual_train():
 
 
     # вручную заданный список событий на context.etalon_map
-    events_ids_list = [0,3, 1,8,6]
+    events_ids_list = [0, 3, 1, 8, 6]
     logger.add_text(" Вручную выбраны события: " + str(events_ids_list))
 
 

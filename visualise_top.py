@@ -8,6 +8,8 @@ from recognise import *
 import matplotlib.pyplot as plt
 
 def VIS_nodes_info_struct(struct, logger, target_maps):
+    if logger is None:
+        return
     # для каждой ноды 2 гистограммы
     nrows = len(struct)
     ncols = 2
@@ -78,5 +80,5 @@ def VIS_detailed_exemplar_of_struct(cogmap, basic_struct, logger):
 def VIS_exemplars_of_struct(cogmaps, basic_struct, logger):
     for cogmap in cogmaps:
         best_done_basic_exemplar, basic_success = recognize_basic_struct(basic_struct, cogmap)
-        fig = VIS_exemplar_as_graph(best_done_basic_exemplar, need_annotations=True)
+        fig = VIS_exemplar_as_graph(best_done_basic_exemplar, need_annotations=False)
         logger.add_fig(fig)
