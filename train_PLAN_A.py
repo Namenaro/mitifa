@@ -50,17 +50,17 @@ if __name__ == '__main__':
     logger = HtmlLogger("LOG A PLAN mod")
     logger.add_text(" Простейшая политика добавления узла: выбираем n самых массифвных событий с эталона")
 
-    class_nums_list = [200, 29, 1, 20, 8, 30, 50, 60, 90, 300, 234, 245, 152, 147, 96, 91, 43, 24, 12, 299]
+    class_nums_list = [200, 29, 1, 20, 8, 30, 50, 60, 90, 300, 234, 245, 152, 147, 96, 91, 43, 24, 12, 299,]
     num_pics = 0
     F1_sum =0
     for class_num in class_nums_list:
         #class_num = randrange(30)
         logger.add_line_little()
-        logger.add_text("Символ " + str(class_num))
-        context = get_default_context(class_num)
+        logger.add_text("Символ " + str(class_num+1)) 
+        context = get_default_context(class_num+1)
         F1 = train_plan_A(context, logger)
         if F1 is not None:
             F1_sum += F1
             num_pics +=1
     logger.add_text("Среднее F1 на этих данных равно " + str(F1_sum/num_pics))
-    logger.close()
+    logger.save()
