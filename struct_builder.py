@@ -49,6 +49,7 @@ class BasicStructBuilder:
         VIS_nodes_info_struct(self.result_struct, logger=self.logger, target_maps=self.context.train_maps)
         self.log_line()
 
+        logger_recogn = HtmlLogger("RECOG LOG")
         # перебираем все события self.dammy_struct кроме первого
         for node_global_id in self.dammy_struct.recognition_order[1:]:
             j+=1
@@ -68,6 +69,13 @@ class BasicStructBuilder:
             self.log_fig(VIS_struct_as_graph(self.result_struct))
             VIS_nodes_info_struct(self.result_struct, logger=self.logger, target_maps=self.context.train_maps)
 
+            # отдельный лог процесса распознавания на одной когмапе-------------------------
+            cogmap = self.context.train_maps[3]
+            logger_recogn.add_text("Распознавание " + str(j) + str("-звенной стр-ры:"))
+            VIS_exemplars_of_struct([cogmap], self.result_struct, logger_recogn)
+            recognize_basic_struct(self.result_struct, cogmap, logger_recogn)
+            logger_recogn.add_line_little()
+            logger_recogn.save()
 
             if need_relax:
                 # релаксиурем имеющуюся к этому моменту базовую структуру

@@ -13,7 +13,7 @@ from f1 import eval_struct_f1
 
 from random import randrange
 
-def train_plan_A(context, logger, num_events=5):
+def train_plan_A(context, logger, num_events=7):
     print("Creating new struct...")
     events_ids_list = get_n_biggest_events(context.etalon_map, num_events)
     dammy_struct, dammy_exemplar = get_dammy_struct_from_events_list(events_ids_list, cogmap=context.etalon_map)
@@ -25,6 +25,7 @@ def train_plan_A(context, logger, num_events=5):
     fig = VIS_exemplar_as_graph(dammy_exemplar, need_annotations=False)
     logger.add_fig(fig)
     logger.save()
+
 
 
     struct_builder = BasicStructBuilder(dammy_struct, context, logger=None)
