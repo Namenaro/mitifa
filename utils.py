@@ -72,19 +72,23 @@ class HtmlLogger:
 
     def add_line_little(self):
         self.html += "<hr>"
+        self.save()
 
     def add_line_big(self):
         self.html += "<hr style=\"height:10px;background:gray\">"
+        self.save()
 
     def add_text(self, text):
         self.html += text + '<br>'
+        self.save()
 
     def add_fig(self, fig):
         tmpfile = BytesIO()
-        fig.savefig(tmpfile, format='png')
+        fig.savefig(tmpfile, format='png', pad_inches=0.0, bbox_inches="tight")
         encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
         self.html += '<img src=\'data:image/png;base64,{}\'>'.format(encoded) + '<br>'
         plt.close(fig)
+        self.save()
 
 
     def save(self):

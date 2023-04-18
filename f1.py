@@ -82,6 +82,7 @@ def evaluate_F1(true_class_train, contrast_class_train, true_class_test, contras
     test_classifier = true_class_test_binary_classifier + contrast_class_test_binary_classifier
     test_input = true_class_test_binary_input + contrast_class_test_binary_input
 
+
     F1_score = f1_score(test_input, test_classifier)
     return F1_score
 
@@ -89,7 +90,7 @@ def evaluate_F1(true_class_train, contrast_class_train, true_class_test, contras
 def eval_struct_f1(basic_struct, context):
     true_class_train = sample_non_triviality_values_for_basic_struct(basic_struct, context.train_maps)
     contrast_class_train = sample_non_triviality_values_for_basic_struct(basic_struct, context.contrast_maps)
-    true_class_test =sample_non_triviality_values_for_basic_struct(basic_struct, context.test_maps)
+    true_class_test = sample_non_triviality_values_for_basic_struct(basic_struct, context.test_maps)
     test_contrast = context.get_more_contrast(num_cogmaps=30)
     contrast_class_test = sample_non_triviality_values_for_basic_struct(basic_struct, test_contrast)
 

@@ -31,13 +31,15 @@ def train_plan_A(context, logger, num_events=7):
     struct_builder = BasicStructBuilder(dammy_struct, context, logger=None)
     result_basic_struct = struct_builder.get_basic_struct(need_relax=False, need_readress=False)
     print("Basic struct created...")
+    cogmap = context.train_maps[3]
+    recognize_basic_struct(result_basic_struct, cogmap, logger)
 
     logger.add_text(" Примеры распознавания на таргет-когмапах:")
     VIS_exemplars_of_struct(context.train_maps[1:4], result_basic_struct, logger)
     logger.save()
 
     fig = visualise_classification_properties_of_basic_struct(result_basic_struct, constrast_cogmaps=context.contrast_maps, target_cogmaps=context.train_maps)
-    logger.add_text(" Классификационные свойства полученной базовой структуры:")
+    logger.add_text(" Классификационные свойства полученной базовой структуры на трейне:")
     logger.add_fig(fig)
     logger.save()
 
@@ -51,17 +53,18 @@ if __name__ == '__main__':
     logger = HtmlLogger("LOG A PLAN mod")
     logger.add_text(" Простейшая политика добавления узла: выбираем n самых массифвных событий с эталона")
 
-    class_nums_list = [200, 29, 1, 20, 8, 30, 50, 60, 90, 300, 234, 245, 152, 147, 96, 91, 43, 24, 12, 299,]
+    class_nums_list = [152]
     num_pics = 0
-    F1_sum =0
+    F1_sum = 0
     for class_num in class_nums_list:
         #class_num = randrange(30)
         logger.add_line_little()
-        logger.add_text("Символ " + str(class_num+1)) 
-        context = get_default_context(class_num+1)
+        logger.add_text("Символ " + str(class_num))
+        context = get_default_context(class_num)
         F1 = train_plan_A(context, logger)
         if F1 is not None:
             F1_sum += F1
-            num_pics +=1
+            num_pics += 1
     logger.add_text("Среднее F1 на этих данных равно " + str(F1_sum/num_pics))
     logger.save()
+

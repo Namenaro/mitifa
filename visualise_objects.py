@@ -174,7 +174,7 @@ def VIS_recognition_generation(logger, generation_sorted):
     nrows = 1
     ncols = max(len(generation_sorted), 2)
 
-    fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
+    fig, axs = plt.subplots(1, ncols, figsize=(8 * ncols, 8), dpi=60)
 
     i=0
     for exemplar_entry in generation_sorted.entries:
